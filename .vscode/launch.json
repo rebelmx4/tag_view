@@ -1,0 +1,28 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug Main Process",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceRoot}",
+        "runtimeExecutable": "node",
+        "windows": {
+          "runtimeExecutable": "node"
+        },
+        "args" : [".electron-vue/dev-runner.js"],
+        "autoAttachChildProcesses": true
+      },
+      {
+        "type": "node",
+        "request": "launch",
+        "name": "启动程序",
+        "cwd": "${workspaceRoot}",
+        "program": "${workspaceRoot}/.electron-vue/dev-runner.js",
+        "windows": {
+            "runtimeExecutable": "node"
+          },
+        "autoAttachChildProcesses": true
+      }
+    ]
+}
