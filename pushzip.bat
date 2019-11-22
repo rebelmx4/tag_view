@@ -1,0 +1,1 @@
+adb push head.zip /sdcard/head.zip

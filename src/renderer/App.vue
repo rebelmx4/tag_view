@@ -1,44 +1,124 @@
 <template>
-<div id="app" :style="{'position':'fixed','width':'100%','height':'100%', 'background':'#696969'}">
-    <div id="titlebar" style="-webkit-app-region:drag">
-        <input type="text" style="-webkit-app-region:no-drag" v-model="rootDir" />
-        <el-button @click="OpenDir" style="-webkit-app-region:no-drag">open</el-button>
-        <div id="titlebar" style=" float:right">
-            <el-button @click="CloseWin" style="-webkit-app-region:no-drag">x</el-button>
+<div id="app" :style="{'position':'fixed','width':'100%','height':'100%'}">
+    <div class="titlebar">
+        <input type="text" class="dir" v-model="rootDir" />
+        <button @click="OpenDir" class="open_dir" icon="el-icon-folder-opened">
+            <img src="static/folder-open.svg">
+        </button>
+        <button type="button" class="close" @click="CloseWin"></button>
+    </div>
+    <div class="mainbody">
+        <!-- file -->
+        <div class="filebody">
+            <div class="filebar">
+                <input type="text" class="keyword" v-model="keyword" />
+                <button class="searchbutton">
+                    <img src="static/icon-search.svg">
+                </button>
+                <button class="sortbutton">
+                    <img src="static/sort.svg">
+                </button>
+                <button class="sortbutton">
+                    <img src="static/sort.svg">
+                </button>
+            </div>
+            <br />
+            <el-row :gutter="30" :style="{'margin-left':'20px', 'margin-right':'20px'}">
+                <el-col :span="4" v-for="(item, index) in files" :class="{ active: isActive }" :style="{'height':'200px'}" :aaa="aaa">
+                    <div class="playcount1">
+                        <img :src="item.thumb" v-bind:id="item.name" width="100%" @dblclick="OpenFile(item)" @click="OpenDrawer(item)" :style="{'border-radius':'8px', 'height':'150px'}">
+                        <p class="playcount">{{item.playCount}}<br>{{item.labels.length}}</p>
+                        <button class="filefunc" @click="AddCollection(item)">
+                            <icon name="favorite" :w="20" :h="20" color="red"></icon>
+                        </button>
+                    </div>
+                </el-col>
+            </el-row>
+        </div>
+        <!-- tools -->
+        <div class="sidebar">
+            <div class="tabs">
+                <button class="tabbtn" @click="selectedTab = 0">
+                    <img src="static/filter.svg" width="25px" height="25px">
+                </button>
+                <button class="tabbtn" @click="selectedTab = 1">
+                    <img src="static/tags.svg" width="25px" height="25px">
+                </button>
+                <button class="tabbtn" @click="selectedTab = 2">
+                    <img src="static/file.svg" width="25px" height="25px">
+                </button>
+                <button class="tabbtn" @click="selectedTab = 3">
+                    <img src="static/Collection.svg" width="25px" height="25px">
+                </button>
+            </div>
+            <!-- filter -->
+            <div v-if="selectedTab == 0" :style="{'height':'100%'}">
+                <!-- head -->
+                <div class="filterhead">
+                    <el-button circle size="small" icon="el-icon-plus" @click="addGroupDialogVisible = true"></el-button>
+                    <el-tooltip content="清空标签" placement="top">
+                        <el-button circle size="small" icon="el-icon-document-delete" @click="clearAllLabels"></el-button>
+                    </el-tooltip>
+                </div>
+                <br>
+                <div :style="{'height':'100%', 'overflow':'auto'}">
+                    <div v-for="(item, index) in groups" class="group">
+                        <div class="groupbar">
+                            <input type="text" class="groupname" v-model="item.name" @change="changeGroupName">
+                            <el-button circle size="small" icon="el-icon-delete" :style="{'float':'right'}"></el-button>
+                            <el-button circle size="small" icon="el-icon-plus" @click="AddLabel(item)" :style="{'float':'right'}"></el-button>
+                        </div>
+                        <!-- https://www.jianshu.com/p/03f0f58f84cc -->
+                        <draggable :options="{group:'label',animation:150,ghostClass:'sortable-ghost',chosenClass:'chosenClass',scroll:true,scrollSensitivity:200}" v-model="item.labels" @change="Change">
+                            <el-checkbox v-for="(label, index) in item.labels" :id="label.id" :label="label.name" v-model="label.selected" @change="SelectLable" class="label"></el-checkbox>
+                        </draggable>
+                    </div>
+                </div>
+            </div>
+            <!-- label -->
+            <div v-else-if="selectedTab == 1" :style="{'height':'100%'}">
+                {{selectedFile.name}}
+                <br>
+                <img :src="selectedFile.thumb" width="150px" height="150px" :style="{'border-radius':'8px'}">
+                <br>
+                <div :style="{'height':'100%', 'overflow':'auto'}">
+                    <div v-for="(item, index) in groups" class="group">
+                        <span class="noselect">{{item.name}}</span>
+                        <el-button circle size="small" icon="el-icon-delete" :style="{'float':'right'}"></el-button>
+                        <el-button circle size="small" icon="el-icon-plus" @click="AddLabel(item)" :style="{'float':'right'}"></el-button>
+                        <br>
+                        <br>
+                        <draggable :options="{group:'label',animation:150,ghostClass:'sortable-ghost',chosenClass:'chosenClass',scroll:true,scrollSensitivity:200}" v-model="item.labels" @change="Change">
+                            <el-checkbox v-for="(label, index) in item.labels" v-bind:id="label.id" :label="label.name" v-model="label.selected1" @change="FileSelectLable" class="label"></el-checkbox>
+                        </draggable>
+                    </div>
+                </div>
+            </div>
+            <!-- fileInfo -->
+            <div v-else-if="selectedTab == 2">
+                <!-- {{selectedFile.name}}
+                        <img v-bind:src="selectedFile.thumb" v-bind:id="selectedFile.name" width="150px" height="150px" :style="{'border-radius':'8px'}">
+                        <div :style="{'height':'100%'}">
+                            <div v-for="(item, index) in groups">
+                                {{item.name}}
+                                <el-button circle size="small" icon="el-icon-delete" :style="{'float':'right'}"></el-button>
+                                <el-button circle size="small" icon="el-icon-plus" @click="AddLabel(item)" :style="{'float':'right'}"></el-button>
+                                <br>
+                                <el-checkbox v-for="(label, index) in item.labels" v-bind:id="label.id" :label="label.name" v-model="label.selected1" @change="FileSelectLable"></el-checkbox>
+                                <el-divider></el-divider>
+                            </div>
+                        </div> -->
+            </div>
+            <!-- collection -->
+            <div v-else-if="selectedTab == 3" :style="{'height':'100%'}">
+                <div :style="{'height':'100%', 'overflow':'auto'}">
+                    <img v-for="(item, index) in collection" :src="item.thumb" v-bind:id="item.name" width="80%" @dblclick="OpenFile(item)" class="favoriteitem">
+                </div>
+            </div>
         </div>
     </div>
-    <div :style="{'height':'70%','background':'#91D100','overflow':'auto','overflow-x':'hidden'}">
-        <br />
-        <el-row :gutter="30" :style="{'height':'100%', 'margin-left':'20px', 'margin-right':'20px'}">
-            <el-col :span="4" v-for="(item, index) in files">
-                <img v-bind:src="item.thumb" v-bind:id="item.name" width="100%" @dblclick="OpenFile" @click="OpenDrawer" :style="{'border-radius':'8px'}">
-                <p>{{item.name}}</p>
-                <br />
-            </el-col>
-        </el-row>
-        <el-button @click="clearAllLabels" :style="{'position':'fixed', 'bottom':'0', 'right':'0'}">clear</el-button>
-    </div>
-    <div v-for="(group, index) in groups">
-        <el-tag v-for="(label, index1) in group.labels" v-if="label.selected == true" closable @close="handleClose(label)">
-            {{label.name}}
-        </el-tag>
-    </div>
-    <div :style="{'height':'30%','background':'#78BA00'}">
-        <el-tabs v-model="selectedGroup" @tab-click="clickGroup" type="border-card" @tab-add="handleTabsEdit" addable>
-            <el-tab-pane v-for="(item, index) in groups" :label="item.name">
-                <el-checkbox v-for="(label, index) in item.labels" v-bind:id="label.id" :label="label.name" v-model="label.selected" @change="SelectLable"></el-checkbox>
-                <el-button type="primary" round @click="AddLabel">+</el-button>
-            </el-tab-pane>
-        </el-tabs>
-    </div>
-    <el-drawer :title="selectedFile" :visible.sync="drawerShow" size="50%">
-        <el-tabs v-model="fileSelectedGroup" @tab-click="fileClickGroup" type="border-card">
-            <el-tab-pane v-for="(item, index) in fileGroups" :label="item.name">
-                <el-checkbox v-for="(label, index) in item.labels" v-bind:id="label.id" :label="label.name" v-model="label.selected1" @change="FileSelectLable"></el-checkbox>
-            </el-tab-pane>
-        </el-tabs>
-    </el-drawer>
-    <el-dialog title="添加组" :visible.sync="addGroupDialogVisible">
+
+    <el-dialog title="添加组" :visible.sync="addGroupDialogVisible" append-to-body>
         <el-form>
             <el-form-item label="名称">
                 <el-input v-model="newGroupName" autocomplete="off"></el-input>
@@ -53,7 +133,7 @@
             <el-button type="primary" @click="ConfirmAddGroup">确 定</el-button>
         </div>
     </el-dialog>
-    <el-dialog title="添加标签" :visible.sync="addLabelDialogVisible">
+    <el-dialog title="添加标签" :visible.sync="addLabelDialogVisible" append-to-body>
         <el-form>
             <el-form-item label="名称">
                 <el-input v-model="newLabelName" autocomplete="off"></el-input>
@@ -68,12 +148,13 @@
 </template>
 
 <script>
-//label
 var fs = require('fs');
 var path = require('path');
 var cp = require('child_process');
 const shell = require('electron').shell;
 const remote = require('electron').remote;
+import draggable from 'vuedraggable'
+var appConfig = require("./AppData")
 
 const dataVersion = 1.0
 let rootDir
@@ -85,13 +166,11 @@ let vData = {}
 
 let mData = {}
 let fsData
-vData.selectedGroup = ""
-vData.fileSelectedGroup = ""
+vData.selectedGroup = {}
 vData.groups = []
 vData.fileGroups = []
 vData.files = []
-vData.drawerShow = false
-vData.selectedFile = ""
+vData.selectedFile = {}
 vData.addGroupDialogVisible = false
 vData.newGroupName = ""
 vData.addLabelDialogVisible = false
@@ -100,43 +179,20 @@ vData.files = []
 vData.rootDir = ""
 vData.sortTypes = ["number", "1"]
 vData.sortType = "number"
+vData.AddGroupFromDrawer = false
+vData.showSilder = "filter"
+vData.isActive = true
+vData.aaa = ""
+vData.tabs = ["el-icon-search", "el-icon-paperclip", "el-icon-files", "el-icon-collection"]
+vData.selectedTab = ""
+vData.collection = []
+vData.keyword = ""
 
-let appData = {}
+let appData = appConfig.load()
+vData.recentDirs = appData.recentDirs
 
-function ReadAppConfig() {
-    if (fs.existsSync("./config.json")) {
-        let jsonstr = fs.readFileSync("./config.json")
-        appData = JSON.parse(jsonstr)
-
-        let i = appData.recentDirs.length;
-        while (i--) {
-            let path = appData.recentDirs[i]
-            if (!fs.existsSync(path)) {
-                appData.recentDirs.splice(i, 1);
-            }
-        }
-
-        vData.recentDirs = appData.recentDirs
-        for (let index in vData.recentDirs) {
-            let path = vData.recentDirs[index]
-            if (fs.existsSync(path)) {
-                Init(path)
-            }
-        }
-
-    } else {
-        appData = {}
-        appData.recentDirs = []
-        SaveAppConfig()
-        vData.recentDirs = []
-    }
-}
-
-ReadAppConfig()
-
-function SaveAppConfig() {
-    let jsonstr = JSON.stringify(appData, null, 2)
-    fs.writeFileSync("./config.json", jsonstr, 'utf8')
+if (vData.recentDirs.length > 0) {
+    Init(vData.recentDirs[0])
 }
 
 function Init(rdir) {
@@ -182,8 +238,7 @@ function Init(rdir) {
     vData.groups = mData.groups
     vData.fileGroups = mData.groups
     vData.files = mData.files
-    vData.drawerShow = false
-    vData.selectedFile = ""
+    vData.selectedFile = {}
     vData.addGroupDialogVisible = false
     vData.newGroupName = ""
     vData.addLabelDialogVisible = false
@@ -292,8 +347,9 @@ function MatchMeta() {
 }
 
 function ClearInvaildMeta() {
-    for (let index in mData.files) {
-        let info = mData.files[index]
+    let i = mData.files.length;
+    while (i--) {
+        let info = mData.files[i]
         let isFound = false
         for (let index1 in fsData) {
             let info1 = fsData[index1]
@@ -303,8 +359,9 @@ function ClearInvaildMeta() {
             }
         }
 
-        if (isFound == false)
-            mData.splice(index, 1)
+        if (isFound == false) {
+            mData.files.splice(i, 1)
+        }
     }
 }
 
@@ -421,18 +478,13 @@ function FindLabelInfo(id) {
     return null
 }
 
-function FillDrawer(name) {
+function FillDrawer(file) {
     ClearSelected1()
 
-    for (let fileindex in mData.files) {
-        let filename = mData.files[fileindex].name
-        if (filename == name) {
-            for (let lableindex in mData.files[fileindex].labels) {
-                let label = mData.files[fileindex].labels[lableindex]
-                let labelinfo = FindLabelInfo(label)
-                labelinfo.selected1 = true
-            }
-        }
+    for (let lableindex in file.labels) {
+        let label = file.labels[lableindex]
+        let labelinfo = FindLabelInfo(label)
+        labelinfo.selected1 = true
     }
 }
 
@@ -502,24 +554,26 @@ function labelCompare(a, b) {
     return 0;
 }
 
-function AddLabel(groupName, labelName) {
-    for (let groupindex in mData.groups) {
-        let group = mData.groups[groupindex]
-        if (groupindex == groupName) {
-            let label = {}
-            label.name = labelName
-            label.id = (++mData.maxlabelId).toString()
-            label.selected = false
-            label.selected1 = false
-            group.labels.push(label)
-            if (group.sortType == "number") {
-                group.labels.sort(labelCompare)
-            }
+function AddLabel(labelName) {
+    // for (let groupindex in mData.groups) {
+    //     let group = mData.groups[groupindex]
+    //     if (groupindex == groupName) {
 
-            SaveDB()
-            break
-        }
+    //         break
+    //     }
+    // }
+
+    let label = {}
+    label.name = labelName
+    label.id = (++mData.maxlabelId).toString()
+    label.selected = false
+    label.selected1 = false
+    vData.selectedGroup.labels.push(label)
+    if (vData.selectedGroup.sortType == "number") {
+        vData.selectedGroup.labels.sort(labelCompare)
     }
+
+    SaveDB()
 }
 
 let clickTimeout = {
@@ -543,17 +597,24 @@ export default {
         return vData
     },
     methods: {
+        changeGroupName() {
+            SaveDB()
+        },
         OpenDir() {
             const dialog = remote.dialog
             dialog.showOpenDialog(remote.getCurrentWindow(), {
                 properties: ['openDirectory']
             }, (filename) => {
                 if (filename != undefined && filename.length === 1) {
-                    vData.recentDirs.unshift(filename[0])
-                    appData.recentDirs.unshift(filename[0])
-                    let jsonstr = JSON.stringify(appData, null, 2)
-                    fs.writeFileSync("./config.json", jsonstr, 'utf8')
-                    Init(filename[0])
+
+                    if (appConfig.isCurDir(filename[0])) {
+                        return
+                    } else {
+                        appConfig.Unshift(filename[0])
+
+                        appConfig.save()
+                        Init(filename[0])
+                    }
                 }
             })
         },
@@ -563,35 +624,40 @@ export default {
         ConfirmAddGroup() {
             vData.addGroupDialogVisible = false
             AddGroup(vData.newGroupName, vData.sortType)
+
             SaveDB()
         },
-        AddLabel() {
+        AddLabel(group) {
+            vData.selectedGroup = group
             vData.addLabelDialogVisible = true
+            vData.newLabelName = ""
         },
         ConfirmAddLabel() {
-            AddLabel(vData.selectedGroup, vData.newLabelName)
+            AddLabel(vData.newLabelName)
             vData.addLabelDialogVisible = false
         },
         handleTabsEdit(targetName, action) {
             vData.addGroupDialogVisible = true
+            vData.AddGroupFromDrawer = false
+            vData.newGroupName = ""
         },
-        OpenFile(event) {
+        handleTabsEdit1(targetName, action) {
+            vData.addGroupDialogVisible = true
+            vData.AddGroupFromDrawer = true
+            vData.newGroupName = ""
+        },
+        OpenFile(file) {
             clickTimeout.clear()
-            shell.openItem(path.join(rootDir, event.currentTarget.id));
-            let file = FindFile(event.currentTarget.id)
+            shell.openItem(path.join(rootDir, file.name));
             file.playCount++;
             SaveDB();
         },
-        OpenDrawer(event) {
-            let id = event.currentTarget.id
+        OpenDrawer(file) {
             clickTimeout.set(function () {
-                vData.selectedFile = id
-                FillDrawer(id)
-                vData.drawerShow = true
+                vData.selectedFile = file
+                vData.selectedTab = 1
+                FillDrawer(file)
             });
-        },
-        clickGroup(tab, event) {
-            console.log(tab, event);
         },
         SelectLable(isSelected, event, v1) {
             console.log(event.currentTarget.id)
@@ -600,24 +666,222 @@ export default {
         },
         fileClickGroup(tab, event) {},
         FileSelectLable(isSelected, event, v1) {
-            let file = FindFile(vData.selectedFile)
+            let file = FindFile(vData.selectedFile.name)
             ModifyLabel2(file)
             SaveDB()
         },
-        clearAllLabels()
-        {
+        clearAllLabels() {
             ClearSelected()
             vData.files = Fileter()
         },
-        handleClose(label)
-        {
+        handleClose(label) {
             label.selected = false
             vData.files = Fileter()
+        },
+        AddCollection(file) {
+            for (let index in vData.collection) {
+                let file1 = vData.collection[index]
+                if (file1.name == file.name) {
+                    return
+                }
+            }
+            vData.collection.push(file)
+        },
+        Change(evt) {
+            SaveDB()
         }
+    },
+    components: {
+        draggable,
     }
 }
 </script>
 
 <style>
-/* CSS */
+.playcount {
+    text-align: center;
+    width: 25px;
+    height: 50px;
+    background-color: red;
+    position: absolute;
+    bottom: 100px;
+    right: 0px;
+}
+
+.playcount1 {
+    height: 200px;
+    position: relative;
+}
+
+div:active [aaa=selected] {
+    border: 2px solid;
+    border-radius: 25px;
+    -moz-border-radius: 25px;
+}
+
+.titlebar {
+    -webkit-app-region: drag;
+    height: 28px;
+    background-color: dddddd;
+}
+
+.close {
+    width: 28px;
+    height: 28px;
+    border-width: 8px;
+    border-style: solid;
+    border-color: dddddd;
+    background: -webkit-linear-gradient(-45deg, transparent 0%, transparent 46%, black 46%, black 56%, transparent 56%, transparent 100%), -webkit-linear-gradient(45deg, transparent 0%, transparent 46%, black 46%, black 56%, transparent 56%, transparent 100%);
+    background-color: dddddd;
+    float: right;
+    -webkit-app-region: no-drag;
+}
+
+.close:hover {
+    width: 28px;
+    height: 28px;
+    border-width: 8px;
+    border-style: solid;
+    border-color: red;
+    background: -webkit-linear-gradient(-45deg, transparent 0%, transparent 46%, white 46%, white 56%, transparent 56%, transparent 100%), -webkit-linear-gradient(45deg, transparent 0%, transparent 46%, white 46%, white 56%, transparent 56%, transparent 100%);
+    background-color: red;
+    float: right;
+    -webkit-app-region: no-drag;
+}
+
+.open_dir {
+    left: 80px;
+    position: relative;
+    width: 28px;
+    height: 28px;
+    transition: all 0.3s ease;
+    border-width: 8px;
+    border-style: solid;
+    border-color: white;
+    -webkit-app-region: no-drag;
+}
+
+.dir {
+    left: calc(50% - 100px);
+    position: relative;
+    top: -4px;
+    width: 200px;
+    height: 24px;
+    border: none;
+    margin: 0px;
+    -webkit-app-region: no-drag;
+    font-size: 15px;
+    /* text-align: center; */
+}
+
+.mainbody {
+    height: calc(100% - 28px);
+    display: flex;
+    background-color: #d8d8d8;
+}
+
+.filebody {
+    height: 100%;
+    width: 70%;
+    /* overflow:auto; */
+}
+
+.filebar {
+    height: 28px;
+}
+
+.keyword {
+    position: relative;
+    top: -12px;
+    width: 200px;
+    height: 24px;
+    font-size: 15px;
+    border: none;
+}
+
+.searchbutton {
+    height: 26px;
+    width: 26px;
+    border: none;
+}
+
+.sortbutton {
+    height: 26px;
+    width: 26px;
+    border: none;
+    float: right
+}
+
+.sidebar {
+    width: 30%;
+    background: #dedede;
+    border-left: 3px solid #555555;
+    height: 100%;
+}
+
+.tabs {
+    height: 28px;
+    background: #aaaaaa
+}
+
+.filterhead {
+    /* background: #bbbbbb */
+}
+
+.tabbtn {
+    height: 26px;
+    width: 26px;
+    border: none;
+    margin-right: 5px;
+    margin-left: 5px
+}
+
+.filefunc {
+    height: 26px;
+    width: 26px;
+    border: none;
+}
+
+.group {
+    margin-bottom: 10px;
+    border-bottom: 3px solid #bbbbbb;
+}
+
+.groupbar {
+    background: #bbbbbb;
+    height: 28px;
+}
+
+.label {
+    width: 50px;
+    height: 30px;
+}
+
+.favoriteitem {
+    position: relative;
+    right: calc(50%-75px);
+    border: radius 8px;
+    height: 150px;
+    margin-bottom: 10px;
+}
+
+.groupname {
+    border: none;
+    background: #bbbbbb
+}
+
+.groupname:hover {
+    border-style: solid;
+    border-color: #ffffff;
+    background: #bbbbbb
+}
+
+.noselect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
 </style>
