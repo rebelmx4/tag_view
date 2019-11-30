@@ -1,0 +1,294 @@
+/* tiltle */
+
+.titlebar {
+  -webkit-app-region: drag;
+  height: 30px;
+  background-color: dddddd;
+}
+
+.open_dir {
+  width: 28px;
+  height: 28px;
+  margin-top: 2px;
+  margin-left: 5px;
+  transition: all 0.3s ease;
+  -webkit-app-region: no-drag;
+  fill: #070a07;
+}
+
+.open_dir:hover {
+  width: 28px;
+  height: 28px;
+  margin-top: 2px;
+  margin-left: 5px;
+  transition: all 0.3s ease;
+  -webkit-app-region: no-drag;
+  fill: #3e36b9;
+}
+
+.minimize {
+  width: 28px;
+  height: 28px;
+  float: right;
+  -webkit-app-region: no-drag;
+  fill: #000000;
+}
+
+.minimize:hover {
+  background: #aaaaaa;
+  fill: red;
+}
+
+.close {
+  width: 28px;
+  height: 28px;
+  float: right;
+  -webkit-app-region: no-drag;
+  fill: #000000;
+}
+
+.close:hover {
+  background: red;
+  fill: white;
+}
+
+/* sidebar */
+/* head */
+.tabs {
+  display: flex;
+  height: 28px;
+  background: #aaaaaa;
+}
+
+.tab_btn {
+  width: 28px;
+  height: 28px;
+  fill: #000000;
+  margin-left: 10px;
+}
+
+.tab_btn:hover {
+  width: 28px;
+  height: 28px;
+  background: red;
+  fill: white;
+  margin-left: 10px;
+}
+
+.tab_btn_selected {
+  width: 28px;
+  height: 28px;
+  background: green;
+  fill: white;
+  margin-left: 10px;
+}
+
+.tab_btn_selected:hover {
+  width: 28px;
+  height: 28px;
+  background: red;
+  fill: white;
+  margin-left: 10px;
+}
+
+/* group */
+.group_container 
+{
+  height:100%;
+  overflow:auto;
+  margin-top: 10px;
+}
+
+.filter_head {
+  height: 30px;
+  display: flex;
+}
+
+.filter_btn {
+  width: 28px;
+  height: 28px;
+  fill: #000000;
+  position: relative;
+  display: table;
+}
+
+.filter_btn:hover {
+  background: red;
+  fill: white;
+  position: relative;
+  display: table;
+}
+
+.group_bar {
+  background: #bbbbbb;
+  height: 28px; 
+  /* display: flex;
+  flex-direction: row; */
+}
+
+.group_btn {
+  width: 28px;
+  height: 28px;
+  fill: #000000;
+  float: right;
+}
+
+/* .group_btn:hover {
+  background: red;
+  fill: white;
+  position: relative;
+  display: table;
+} */
+
+
+
+
+
+
+
+
+
+.playcount {
+  text-align: center;
+  width: 25px;
+  height: 50px;
+  background-color: red;
+  position: absolute;
+  bottom: 100px;
+  right: 0px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+.playcount1 {
+  height: 200px;
+  position: relative;
+}
+
+div:active [aaa="selected"] {
+  border: 2px solid;
+  border-radius: 25px;
+  -moz-border-radius: 25px;
+}
+
+.labelSelected {
+  background-color: red;
+  width: 50px;
+  height: 30px;
+}
+
+.labelUnselected {
+  background-color: green;
+  width: 50px;
+  height: 30px;
+}
+
+.mainbody {
+  height: calc(100% - 28px);
+  display: flex;
+  background-color: #d8d8d8;
+}
+
+.filebody {
+  height: 100%;
+  width: 70%;
+  /* overflow:auto; */
+}
+
+.filebar {
+  height: 28px;
+}
+
+.keyword {
+  position: relative;
+  top: -12px;
+  width: 200px;
+  height: 24px;
+  font-size: 15px;
+  border: none;
+}
+
+.searchbutton {
+  height: 26px;
+  width: 26px;
+  border: none;
+}
+
+.sortbutton {
+  height: 26px;
+  width: 26px;
+  border: none;
+  float: right;
+}
+
+.sidebar {
+  width: 30%;
+  background: #dedede;
+  border-left: 3px solid #555555;
+  height: 100%;
+}
+
+
+
+.tabbtn {
+  height: 26px;
+  width: 26px;
+  border: none;
+  margin-right: 5px;
+  margin-left: 5px;
+}
+
+.filefunc {
+  height: 26px;
+  width: 26px;
+  border: none;
+}
+
+.group {
+  margin-bottom: 10px;
+  border-bottom: 3px solid #bbbbbb;
+}
+
+
+
+.label {
+  width: 50px;
+  height: 30px;
+}
+
+.favoriteitem {
+  position: relative;
+  right: calc(50%-75px);
+  border: radius 8px;
+  height: 150px;
+  margin-bottom: 10px;
+}
+
+.groupname {
+  border: none;
+  background: #bbbbbb;
+}
+
+.groupname:hover {
+  border-style: solid;
+  border-color: #ffffff;
+  background: #bbbbbb;
+}
+
+.noselect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
