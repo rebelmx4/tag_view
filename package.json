@@ -15,7 +15,7 @@
     "pack:main": "cross-env NODE_ENV=production webpack --progress --colors --config .electron-vue/webpack.main.config.js",
     "pack:renderer": "cross-env NODE_ENV=production webpack --progress --colors --config .electron-vue/webpack.renderer.config.js",
     "postinstall": "",
-    "svg": "vsvg -s ./static -t ./src/icons"
+    "svg": "vsvg -s ./src/icons_asset -t ./src/icons"
   },
   "build": {
     "productName": "tag_view",

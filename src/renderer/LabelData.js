@@ -7,6 +7,7 @@ let data;
 let version = 1;
 let path;
 let selectedLabelOfGroup = [];
+let groupdata
 
 function Init(dbPath) {
   path = dbPath;
@@ -21,7 +22,9 @@ function Init(dbPath) {
     data = JSON.parse(str);
   }
 
-  return data.groups;
+  groupdata = data.groups
+
+  return groupdata;
 }
 
 function labelCompare(a, b) {
@@ -37,10 +40,13 @@ function labelCompare(a, b) {
 }
 
 function AddLabel(group, name) {
+  if(name == "")
+    return 
+
   for (let index in group.labels) {
     let label = group.labels[index];
     if (label.name == name) {
-      return -1;
+      return 
     }
   }
 
@@ -54,12 +60,15 @@ function AddLabel(group, name) {
   if (group.sortType == "number") {
     group.labels.sort(labelCompare);
   }
+
+  Save()
 }
 
 function DeleteLabel(group, label) {
   for (var i = 0; i < group.labels.length; i++) {
     if (group.labels[i].id == label.id) {
       group.labels.splice(i, 1);
+      Save()
       break;
     }
   }
@@ -69,7 +78,7 @@ function AddGroup(groups, name, sortType) {
   for (let index in groups) {
     let group = groups[index];
     if (group.name == name) {
-      return -1;
+      return 
     }
   }
 
@@ -79,12 +88,15 @@ function AddGroup(groups, name, sortType) {
   group.labels = [];
   group.isUnion = true
   groups.push(group);
+
+  Save()
 }
 
 function DeleteGroup(groups, name) {
   for (var i = 0; i < groups.length; i++) {
     if (groups[i].name == name) {
       groups.splice(i, 1);
+      Save()
       break;
     }
   }
@@ -175,6 +187,65 @@ function Filter(filelabels) {
   return true;
 }
 
+function GetFileLabels()
+{
+  let selectedLabels = []
+    for (let groupindex in data.groups) {
+        let group = data.groups[groupindex]
+        for (let labelIndex in group.labels) {
+            let label = group.labels[labelIndex]
+            if (label.selected1 == true) {
+                selectedLabels.push(label.id)
+            }
+        }
+    }
+
+    return selectedLabels
+}
+
+function ClearSelected() {
+  for (let groupindex in data.groups) {
+      let group = data.groups[groupindex]
+      for (let labelindex in group.labels) {
+          group.labels[labelindex].selected = false
+      }
+  }
+}
+
+function ClearSelected1() {
+  for (let groupindex in data.groups) {
+      let group = data.groups[groupindex]
+      for (let labelindex in group.labels) {
+          group.labels[labelindex].selected1 = false
+      }
+  }
+}
+
+function FindLabelInfo(id) {
+  for (let groupindex in groupdata) {
+      let group = groupdata[groupindex]
+      for (let labelindex in group.labels) {
+          let label = group.labels[labelindex]
+          if (label.id == id) {
+              return label
+          }
+      }
+  }
+
+  return null
+}
+
+function SetSelected1(labels)
+{
+  ClearSelected1()
+
+  for (let lableindex in labels) {
+      let label = labels[lableindex]
+      let labelinfo = FindLabelInfo(label)
+      labelinfo.selected1 = true
+  }
+}
+
 export {
   Init,
   DeleteGroup,
@@ -185,5 +256,9 @@ export {
   clearLabelsByGroup,
   selectAllByGroup,
   Filter,
-  HasSelectedLabel
+  HasSelectedLabel,
+  GetFileLabels,
+  ClearSelected1,
+  ClearSelected,
+  SetSelected1
 };

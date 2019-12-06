@@ -1,3 +1,10 @@
+.frame {
+  width:100%;
+  height:100%;
+  position:fixed;
+  left:0px
+}
+
 /* tiltle */
 
 .titlebar {
@@ -52,51 +59,153 @@
   fill: white;
 }
 
-/* sidebar */
-/* head */
-.tabs {
+/* main body */
+.main_body {
+  height: calc(100% - 28px);
   display: flex;
-  height: 28px;
-  background: #aaaaaa;
+  background-color: #d8d8d8;
 }
 
-.tab_btn {
+/* file */
+.file_body {
+  height: 100%;
+  width: 70%;
+  /* overflow:auto; */
+}
+
+.file_bar {
+  height: 28px;
+  margin-bottom: 15px;
+}
+
+.keyword {
+  position: relative;
+  top: -8px;
+  width: 350px;
+  height: 24px;
+  font-size: 15px;
+  border: none;
+  margin-left: 3px;
+  margin-top: 10px;
+}
+
+.search_btn {
+  height: 26px;
+  width: 26px;
+  fill:red;
+}
+
+.sort_btn {
   width: 28px;
   height: 28px;
   fill: #000000;
-  margin-left: 10px;
+  margin-left: 15px;
+  margin-top: 5px;
+  float:right;
 }
 
-.tab_btn:hover {
-  width: 28px;
-  height: 28px;
-  background: red;
-  fill: white;
-  margin-left: 10px;
-}
-
-.tab_btn_selected {
+.sort_btn_asc {
   width: 28px;
   height: 28px;
   background: green;
   fill: white;
   margin-left: 10px;
+  margin-top: 5px;
+  float:right;
 }
 
-.tab_btn_selected:hover {
+.sort_btn_dec {
   width: 28px;
   height: 28px;
   background: red;
   fill: white;
-  margin-left: 10px;
+  margin-left: 15px;
+  margin-top: 5px;
+  float:right;
+}
+
+.file_form {
+  height:calc(100% - 32px);
+  overflow:auto;
+}
+
+.file {
+  height: 200px;
+  position: relative;
+}
+
+.file_img {
+  height: 150px;
+  position: relative;
+  border-width: 5px;
+  border-radius:8px;
+  width:100%
+}
+
+.file_img_selected {
+  height: 150px;
+  position: relative;
+  border-color: black;
+  border-width: 5px;
+  border-radius:8px;
+  border-style:dashed dashed;
+  width:100%
+}
+
+.file_favorite {
+  height: 20px;
+  width: 20px;
+  fill:red;
+}
+
+/* sidebar */
+/* head */
+.tabs {
+  display: flex;
+  height: 28px;
+  background: #7f9eb2;
+}
+
+.tab_btn {
+  width: 60px;
+  height: 28px;
+  fill: #000000;
+}
+
+.tab_btn_selected {
+  width: 60px;
+  height: 28px;
+  background: rgb(62, 63, 71);
+  fill: white;
+}
+
+.tab_btn_img {
+  width: 24px;
+  height: 24px;
+  fill: #000000;
+  margin-left:18px;
+  margin-top:2px;
+}
+
+.tab_btn_img_selected {
+  width: 24px;
+  height: 24px;
+  fill: white;
+  margin-left:18px;
+  margin-top:2px;
 }
 
 /* group */
 .group_container 
 {
-  height:100%;
+  height:calc(100% - 70px);
   overflow:auto;
   margin-top: 10px;
+}
+
+.group {
+  margin-bottom: 10px;
+  border-bottom: 3px solid #bbbbbb;
 }
 
 .filter_head {
@@ -122,8 +231,15 @@
 .group_bar {
   background: #bbbbbb;
   height: 28px; 
-  /* display: flex;
-  flex-direction: row; */
+}
+
+.groupname {
+  border: none;
+  background: #bbbbbb;
+}
+
+.groupname:hover {
+  border-style: none;
 }
 
 .group_btn {
@@ -141,38 +257,19 @@
 } */
 
 
+.group_label_container 
+{
+  height:calc(100% - 200px);
+  overflow:auto;
+  margin-top: 10px;
+}
 
-
-
-
-
-
-
-.playcount {
-  text-align: center;
-  width: 25px;
-  height: 50px;
-  background-color: red;
-  position: absolute;
-  bottom: 100px;
-  right: 0px;
+.group_label {
+  margin-bottom: 10px;
+  border-bottom: 3px solid #bbbbbb;
 }
 
 
-
-
-
-
-
-
-
-
-
-
-.playcount1 {
-  height: 200px;
-  position: relative;
-}
 
 div:active [aaa="selected"] {
   border: 2px solid;
@@ -181,54 +278,20 @@ div:active [aaa="selected"] {
 }
 
 .labelSelected {
-  background-color: red;
-  width: 50px;
-  height: 30px;
-}
-
-.labelUnselected {
   background-color: green;
   width: 50px;
   height: 30px;
+  margin-left: 5px;
 }
 
-.mainbody {
-  height: calc(100% - 28px);
-  display: flex;
-  background-color: #d8d8d8;
+.labelUnselected {
+  background-color: #999999;
+  width: 50px;
+  height: 30px;
+  margin-left: 5px;
 }
 
-.filebody {
-  height: 100%;
-  width: 70%;
-  /* overflow:auto; */
-}
 
-.filebar {
-  height: 28px;
-}
-
-.keyword {
-  position: relative;
-  top: -12px;
-  width: 200px;
-  height: 24px;
-  font-size: 15px;
-  border: none;
-}
-
-.searchbutton {
-  height: 26px;
-  width: 26px;
-  border: none;
-}
-
-.sortbutton {
-  height: 26px;
-  width: 26px;
-  border: none;
-  float: right;
-}
 
 .sidebar {
   width: 30%;
@@ -253,10 +316,7 @@ div:active [aaa="selected"] {
   border: none;
 }
 
-.group {
-  margin-bottom: 10px;
-  border-bottom: 3px solid #bbbbbb;
-}
+
 
 
 
@@ -273,16 +333,7 @@ div:active [aaa="selected"] {
   margin-bottom: 10px;
 }
 
-.groupname {
-  border: none;
-  background: #bbbbbb;
-}
 
-.groupname:hover {
-  border-style: solid;
-  border-color: #ffffff;
-  background: #bbbbbb;
-}
 
 .noselect {
   -webkit-touch-callout: none;

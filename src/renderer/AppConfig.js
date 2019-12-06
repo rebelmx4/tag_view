@@ -3,6 +3,7 @@ var path = require('path');
 var cp = require('child_process');
 const shell = require('electron').shell;
 const remote = require('electron').remote;
+import draggable from 'vuedraggable'
 
 let data
 
@@ -48,13 +49,13 @@ function Unshift(dir)
         {
             remove(dir)
             data.recentDirs.unshift(dir)
-
+            save()
             return true
         }
     }
     else {
         data.recentDirs.unshift(dir)
-
+        save()
         return true
     }
 }
