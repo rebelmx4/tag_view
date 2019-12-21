@@ -110,6 +110,32 @@ function SetSelected(file)
     _selectedFile.isSelected = true
 }
 
+let sortTypes = {}
+sortTypes.time_asc = 1
+sortTypes.time_dec = 2
+sortTypes.tag_asc = 3
+sortTypes.tag_dec = 4
+sortTypes.size_asc = 5
+sortTypes.size_dec = 6
+sortTypes.duration_asc = 7
+sortTypes.duration_dec = 8
+
+let sortFuncs = []
+sortFuncs[sortTypes.time_asc] = function(result) {result.sort(function (a, b) { return (a.addtime - b.addtime)})}
+sortFuncs[sortTypes.time_dec] = function(result) {result.sort(function (a, b) { return (b.addtime - a.addtime)})}
+sortFuncs[sortTypes.tag_asc] = function(result) {result.sort(function (a, b) { return (a.labels.length - b.labels.length)})}
+sortFuncs[sortTypes.tag_dec] = function(result) {result.sort(function (a, b) { return (b.labels.length - a.labels.length)})}
+sortFuncs[sortTypes.size_asc] = function(result) {result.sort(function (a, b) { return (a.size - b.size)})}
+sortFuncs[sortTypes.size_dec] = function(result) {result.sort(function (a, b) { return (b.size - a.size)})}
+sortFuncs[sortTypes.duration_asc] = function(result) {result.sort(function (a, b) { return (a.duration - b.duration)})}
+sortFuncs[sortTypes.duration_dec] = function(result) {result.sort(function (a, b) { return (b.duration - a.duration)})}
+
+function sort(result, sorttype)
+{
+    sortFuncs[sorttype](result)
+    return result
+}
+
 export {
     Init,
     Save,
@@ -117,6 +143,6 @@ export {
     AddFile,
     Files,
     Search,
-    SetSelected
+    SetSelected, sort,  sortTypes
   };
   

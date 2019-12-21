@@ -69,7 +69,7 @@
 /* file */
 .file_body {
   height: 100%;
-  width: 100%;
+  width: 70%;
   /* overflow:auto; */
 }
 
@@ -96,32 +96,40 @@
 }
 
 .sort_btn {
-  width: 28px;
+  width:75px;
   height: 28px;
-  fill: #000000;
   margin-left: 15px;
   margin-top: 5px;
   float:right;
+  
 }
 
-.sort_btn_asc {
+.sort_btn_selected {
+  width:75px;
+  height: 28px;
+  margin-left: 15px;
+  margin-top: 5px;
+  float:right;
+  background:green;
+}
+
+.sort_asc {
   width: 28px;
   height: 28px;
-  background: green;
-  fill: white;
+  fill: black;
   margin-left: 10px;
   margin-top: 5px;
   float:right;
 }
 
-.sort_btn_dec {
+.sort_dec {
   width: 28px;
   height: 28px;
-  background: red;
-  fill: white;
+  fill: black;
   margin-left: 15px;
   margin-top: 5px;
   float:right;
+  transform:rotate(180deg)
 }
 
 .file_form {
@@ -159,12 +167,6 @@
 }
 
 /* sidebar */
-.sidebar {
-  width: 30%;
-  background: #dedede;
-  border-left: 3px solid #555555;
-  height: 100%;
-}
 /* head */
 .tabs {
   display: flex;
@@ -265,7 +267,7 @@
 
 .group_label_container 
 {
-  height:calc(100% - 250px);
+  height:calc(100% - 200px);
   overflow:auto;
   margin-top: 10px;
 }
@@ -299,7 +301,12 @@ div:active [aaa="selected"] {
 
 
 
-
+.sidebar {
+  width: 30%;
+  background: #dedede;
+  border-left: 3px solid #555555;
+  height: 100%;
+}
 
 
 

@@ -1,5 +1,5 @@
 <template>
-<div id="app" class="frame" >
+<div id="app" class="frame">
     <div class="titlebar">
         <svgicon name="folder-open" class="open_dir" @click="OpenDir"></svgicon>
         <svgicon name="close" class="close" @click="CloseWin"></svgicon>
@@ -9,18 +9,23 @@
         <!-- file -->
         <div class="file_body">
             <div class="file_bar">
-                <input type="text" class="keyword" v-model="keyword" @change="Search"/>
-                <svgicon name="icon-search" class="search_btn" @click="Search"> </svgicon>
+                <input type="text" class="keyword" v-model="keyword" @change="Search" />
+                <!-- <svgicon name="icon-search" class="search_btn" @click="Search"> </svgicon>
                 <svgicon name="time" :class="fileSortType == 1? 'sort_btn_asc' : fileSortType == 2? 'sort_btn_dec' : 'sort_btn'" @click="SetAddTimeSortType" title="head"></svgicon>
                 <svgicon name="tag" :class="fileSortType == 3? 'sort_btn_asc' : fileSortType == 4? 'sort_btn_dec' : 'sort_btn'" @click="SetLabelNumSortType" title="head"></svgicon>
                 <svgicon name="size" :class="fileSortType == 5? 'sort_btn_asc' : fileSortType == 6? 'sort_btn_dec' : 'sort_btn'" @click="SetSizeSortType" title="head"></svgicon>
-                <svgicon name="duration" :class="fileSortType == 7? 'sort_btn_asc' : fileSortType == 8? 'sort_btn_dec' : 'sort_btn'" @click="SetDurationSortType" title="head"></svgicon>
+                <svgicon name="duration" :class="fileSortType == 7? 'sort_btn_asc' : fileSortType == 8? 'sort_btn_dec' : 'sort_btn'" @click="SetDurationSortType" title="head"></svgicon> -->
+                <button class="sort_btn" :class="fileSortType == sortTypes.duration_asc || fileSortType == sortTypes.duration_dec? 'sort_btn_selected' : 'sort_btn'" @click="SetDurationSortType">时长</button>
+                <button class="sort_btn" :class="fileSortType == sortTypes.tag_asc || fileSortType == sortTypes.tag_dec? 'sort_btn_selected' : 'sort_btn'" @click="SetLabelNumSortType">标签数量</button>
+                <button class="sort_btn" :class="fileSortType == sortTypes.time_asc || fileSortType == sortTypes.time_dec? 'sort_btn_selected' : 'sort_btn'" @click="SetAddTimeSortType">录入时间</button>
+                <button class="sort_btn" :class="fileSortType == sortTypes.size_asc || fileSortType == sortTypes.size_dec? 'sort_btn_selected' : 'sort_btn'" @click="SetSizeSortType">文件大小</button>
+                <svgicon name="up" :class="fileSortType % 2 == 1? 'sort_asc' : 'sort_dec'"></svgicon>
             </div>
             <div class="file_form">
                 <el-row :gutter="30" :style="{'margin-left':'20px', 'margin-right':'20px'}">
                     <el-col :span="4" v-for="(item, index) in files" :style="{'height':'200px'}">
                         <div class="file">
-                            <img :src="item.thumb" v-bind:id="item.name"  @dblclick="OpenFile(item)" @click="ShowFileLables(item)" :class="item.isSelected?'file_img_selected':'file_img'">
+                            <img :src="item.thumb" v-bind:id="item.name" @dblclick="OpenFile(item)" @click="ShowFileLables(item)" :class="item.isSelected?'file_img_selected':'file_img'">
                             <svgicon name="favorite" class="file_favorite" @click="AddCollection(item)"> </svgicon>
                         </div>
                     </el-col>
@@ -37,10 +42,10 @@
                     <svgicon name="tags" :class="selectedTab == 1? 'tab_btn_img_selected' : 'tab_btn_img'" @click="selectedTab = 1" title="head"></svgicon>
                 </div>
                 <div :class="selectedTab == 2? 'tab_btn_selected' : 'tab_btn'" @click="selectedTab = 2">
-                   <svgicon name="file" :class="selectedTab == 2? 'tab_btn_img_selected' : 'tab_btn_img'" @click="selectedTab = 2" title="head"></svgicon>
+                    <svgicon name="file" :class="selectedTab == 2? 'tab_btn_img_selected' : 'tab_btn_img'" @click="selectedTab = 2" title="head"></svgicon>
                 </div>
                 <div :class="selectedTab == 3? 'tab_btn_selected' : 'tab_btn'" @click="selectedTab = 3">
-                   <svgicon name="albums" :class="selectedTab == 3? 'tab_btn_img_selected' : 'tab_btn_img'" @click="selectedTab = 3" title="head"></svgicon>
+                    <svgicon name="albums" :class="selectedTab == 3? 'tab_btn_img_selected' : 'tab_btn_img'" @click="selectedTab = 3" title="head"></svgicon>
                 </div>
             </div>
             <!-- filter -->
@@ -122,6 +127,13 @@
         </div>
     </div>
 
+    <el-dialog title="添加标签" :visible.sync="addLabelDialogVisible" append-to-body>
+        <el-form @submit.native.prevent>
+            <el-form-item label="名称">
+                <input ref="newLabelName" v-model="newLabelName" v-on:keyup.enter="ConfirmAddLabel">
+            </el-form-item>
+        </el-form>
+    </el-dialog>
     <el-dialog title="添加组" :visible.sync="addGroupDialogVisible" append-to-body>
         <el-form>
             <el-form-item label="名称">
@@ -132,29 +144,14 @@
                 </el-select>
             </el-form-item>
         </el-form>
-        <div slot="footer" class="dialog-footer">
-            <el-button @click="addGroupDialogVisible = false">取 消</el-button>
-            <el-button type="primary" @click="ConfirmAddGroup">确 定</el-button>
-        </div>
     </el-dialog>
     <el-dialog title="删除组" :visible.sync="showDeleteGroupDialog" append-to-body>
         {{"确定要删除" + selectedGroup.name}}
         <div slot="footer" class="dialog-footer">
-            <el-button @click="showDeleteGroupDialog = false">取 消</el-button>
             <el-button type="primary" @click="ConfirmDeleteGroup(selectedGroup)">确 定</el-button>
         </div>
     </el-dialog>
-    <el-dialog title="添加标签" :visible.sync="addLabelDialogVisible" append-to-body>
-        <el-form>
-            <el-form-item label="名称">
-                <input ref="newLabelName" v-model="newLabelName" v-on:keyup.enter="ConfirmAddLabel">
-            </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer">
-            <el-button @click="addLabelDialogVisible = false">取 消</el-button>
-            <el-button type="primary" @click="ConfirmAddLabel">确 定</el-button>
-        </div>
-    </el-dialog>
+
     <el-dialog title="修改标签" :visible.sync="changeLabelDialogVisible" append-to-body>
         <el-form>
             <el-form-item label="名称">
@@ -181,8 +178,11 @@ var appConfig = require("./AppConfig")
 var labelData = require("./LabelData")
 var fileData = require("./FileData")
 let fsDataS = require("./FsData")
+var FFmpeg = require('fluent-ffmpeg');
 import '../icons'
-import { filter } from 'minimatch';
+import {
+    filter
+} from 'minimatch';
 
 let rootDir
 let thumbDir
@@ -206,7 +206,6 @@ vData.showDeleteGroupDialog = false
 vData.willchangeLabel = {}
 vData.changeLabelDialogVisible = false
 vData.willchangeLabelname = ""
-vData.fileSortType = 0
 
 let appData = appConfig.load()
 vData.recentDirs = appData.recentDirs
@@ -250,6 +249,10 @@ function Init(rdir) {
     vData.selectedFile = {}
     vData.newGroupName = ""
     vData.newLabelName = ""
+
+    vData.sortTypes = fileData.sortTypes
+    vData.fileSortType = vData.sortTypes.time_dec
+
     Filter()
 }
 
@@ -296,34 +299,69 @@ function hmsToSecondsOnly(str) {
     return s;
 }
 
-function GenThumb(filePath, thumbPath, info) {
-    let cmd = 'ffmpeg -i "' + filePath + '" 2>&1 | FindStr "Duration"'
-    var process = cp.exec(cmd);
+function GenThumb(videoPath, path, info) {
+    let p = new Promise(function (resolve, reject) {
+        let command = FFmpeg()
+            .input(videoPath)
+            .ffprobe(function (err, data) {
+                if (err) {
+                    reject(err);
+                    return;
+                }
 
-    process.stdout.on('data', function (data) {
-        var items = data.split(",")
-
-        if (items.length > 1) {
-            var str = items[0].substring(0, "   Duration: ".length - 1)
-            if (str == "  Duration: ") {
-                let time = hmsToSecondsOnly(items[0].substring("   Duration: ".length).split(".")[0])
-                info.duration = time
-                var thumbProcess = cp.exec('ffmpeg -ss ' + time * 0.5 + ' -i "' + filePath + '" -y -f image2  -vframes 1 -s 352x240 "' + thumbPath + '"');
-                thumbProcess.stderr.on('data', function (d) {
-                    console.log(d)
-                })
-                thumbProcess.on('exit', (code) => {
-                    info.thumb = thumbPath
-                    info.duration = time
-                    labelData.Save()
-                })
-            }
-        }
+                info.duration = data.format.duration
+                var streams = data.streams;
+                if (streams) {
+                    streams.map((value) => {
+                        if (value.codec_type == 'video') {
+                            info.width = value.width
+                            info.height = value.height
+                        }
+                    })
+                }
+            });
+        
+        fileData.Save()
     });
-    process.stderr.on('uncaughtException', err => {
-        console.log(err)
-    })
+
+    var proc = new FFmpeg(videoPath)
+            .takeScreenshots({count:1,timemarks:['50%'],filename:path}, '' )
+            .on('end', function(err) {
+                info.thumb = path
+                fileData.Save()} 
+                )
 }
+
+// function GenThumb(filePath, thumbPath, info) {
+//     let cmd = 'ffmpeg -i "' + filePath + '" 2>&1 | FindStr "Duration"'
+//     var process = cp.exec(cmd);
+
+//     videoSupport(filePath)
+
+//     process.stdout.on('data', function (data) {
+//         var items = data.split(",")
+
+//         if (items.length > 1) {
+//             var str = items[0].substring(0, "   Duration: ".length - 1)
+//             if (str == "  Duration: ") {
+//                 let time = hmsToSecondsOnly(items[0].substring("   Duration: ".length).split(".")[0])
+//                 info.duration = time
+//                 var thumbProcess = cp.exec('ffmpeg -ss ' + time * 0.5 + ' -i "' + filePath + '" -y -f image2  -vframes 1 -s 352x240 "' + thumbPath + '"');
+//                 thumbProcess.stderr.on('data', function (d) {
+//                     console.log(d)
+//                 })
+//                 thumbProcess.on('exit', (code) => {
+//                     info.thumb = thumbPath
+//                     info.duration = time
+//                     labelData.Save()
+//                 })
+//             }
+//         }
+//     });
+//     process.stderr.on('uncaughtException', err => {
+//         console.log(err)
+//     })
+// }
 
 function GenThumbs() {
     for (let fileindex in vData.files) {
@@ -331,7 +369,6 @@ function GenThumbs() {
         let filePath = path.join(rootDir, filename)
         let thumbPath = path.join(thumbDir, filename + ".jpg")
         if (!fs.existsSync(thumbPath)) {
-            thumbPath,
             vData.files[fileindex].thumb = ""
             GenThumb(filePath, thumbPath, vData.files[fileindex])
         }
@@ -355,43 +392,7 @@ function Filter() {
         }
     }
 
-    if (vData.fileSortType == 1) {
-        result.sort(function (a, b) {
-            return (a.addtime - b.addtime)
-        });
-    } else if (vData.fileSortType == 2) {
-        result.sort(function (a, b) {
-            return (b.addtime - a.addtime)
-        });
-    } else if (vData.fileSortType == 3) {
-        result.sort(function (a, b) {
-            return (a.labels.length - b.labels.length)
-        });
-    } else if (vData.fileSortType == 4) {
-        result.sort(function (a, b) {
-            return (b.labels.length - a.labels.length)
-        });
-    }
-    else if (vData.fileSortType == 5) {
-        result.sort(function (a, b) {
-            return (a.size - b.size)
-        });
-    } else if (vData.fileSortType == 6) {
-        result.sort(function (a, b) {
-            return (b.size - a.size)
-        });
-    }
-    else if (vData.fileSortType == 7) {
-        result.sort(function (a, b) {
-            return (a.duration - b.duration)
-        });
-    } else if (vData.fileSortType == 8) {
-        result.sort(function (a, b) {
-            return (b.duration - a.duration)
-        });
-    }
-
-    vData.files = result
+    vData.files = fileData.sort(result, vData.fileSortType);
 }
 
 let clickTimeout = {
@@ -413,7 +414,7 @@ function SetFileSortType(num1, num2) {
     if (vData.fileSortType == num1) {
         vData.fileSortType = num2
     } else if (vData.fileSortType == num2) {
-        vData.fileSortType = 0
+        vData.fileSortType = vData.sortTypes.time_dec
     } else {
         vData.fileSortType = num1
     }
@@ -448,8 +449,7 @@ export default {
                 }
             })
         },
-        Search()
-        {
+        Search() {
             Filter()
         },
         ShowGroupDialog() {
@@ -457,7 +457,7 @@ export default {
             let self = this
             self.$nextTick()
                 .then(function () {
-                   self.$refs.newGroupName.focus()
+                    self.$refs.newGroupName.focus()
                 })
         },
         ConfirmAddGroup() {
@@ -518,7 +518,7 @@ export default {
         },
         clearAllLabels() {
             labelData.ClearSelected()
-           Filter()
+            Filter()
         },
         AddCollection(file) {
             for (let index in vData.collection) {
